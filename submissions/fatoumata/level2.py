@@ -33,7 +33,9 @@ def process_orders(initial_book: MultiBook, orders: Iterable[Order]) -> MultiBoo
                     immediately_execute(order, book.asks.orders)
                     
                 elif order.side == Side.SELL:
-                    immediately_execute(order, book.bids.orders) 
+                    bids=book.bids.orders
+                    bids.sort(key=lambda x: x.price, reverse=True)
+                    immediately_execute(order,bids) 
 
             else:
                 if order.side == Side.BUY:
@@ -54,15 +56,16 @@ def process_orders(initial_book: MultiBook, orders: Iterable[Order]) -> MultiBoo
 
 def immediately_execute(order , orders):
     
-    i=0
-    while order.quantity>=0 and i<len(orders):
-        current = orders[i]
+
+    while order.quantity>=0:
+        current = orders[0]
         quantité = min(order.quantity, current.quantity)
         order.quantity -= quantité
         current.quantity -= quantité
         if current.quantity <= 0:
-            orders.pop(i)  
-        i+=1
+            orders.pop(0)  
+        else:
+            break
 
          
 
@@ -84,4 +87,14 @@ def execute_order(order, orders):
         current.quantity -= quantité
         
         if current.quantity <= 0:
-            orders.pop(0)   
+            orders.pop(0)  
+        else:
+            break
+
+
+
+
+
+
+   
+   
